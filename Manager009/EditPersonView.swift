@@ -21,9 +21,10 @@ struct EditPersonView: View {
             .textContentType(.name)
             .textInputAutocapitalization(.words)
             
-            Section ("Notes"){
-                TextField ("Details", text: $person.details, axis: .vertical)
-            }
+//            Section ("Notes"){
+//                TextField("Person ID", value: $person.personId, format: .number)
+//                    .keyboardType(.numberPad)
+//            }
         }
         .navigationTitle(Text("Edit Person"))
         .navigationBarTitleDisplayMode(.inline)
@@ -34,3 +35,4 @@ struct EditPersonView: View {
 //#Preview {
 //    EditPersonView()
 //}
+

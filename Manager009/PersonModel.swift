@@ -11,12 +11,12 @@ import SwiftData
 @Model class Person {
     var firstName: String
     var lastName: String
-    var details: String
+    var personId: Int
 
-    init(firstName: String, lastName: String, details: String) {
+    init(firstName: String, lastName: String) {
         self.firstName = firstName
         self.lastName = lastName
-        self.details = details
+        self.personId = Int(Date().timeIntervalSince1970 * 1000)
     }
     
 }

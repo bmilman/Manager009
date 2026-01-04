@@ -25,7 +25,7 @@ struct ContentView: View {
                     struct PersonSummary: Codable {
                         let firstName: String
                         let lastName: String
-                        let details: String
+                        let personId: Int
                     }
 
                     let decoder = JSONDecoder()
@@ -33,7 +33,7 @@ struct ContentView: View {
                     for item in items {
                         if let data = item.data(using: .utf8),
                            let summary = try? decoder.decode(PersonSummary.self, from: data) {
-                            print("Dropped person => first: \(summary.firstName), last: \(summary.lastName), details: \(summary.details)")
+                            print("Dropped person => first: \(summary.firstName), last: \(summary.lastName), details: \(summary.personId), location: \(location)")
                             decodedAny = true
                         } else {
                             print("Failed to decode dropped item as PersonSummary JSON: \(item)")
@@ -84,9 +84,18 @@ struct ContentView: View {
     }
     
     func addPerson() {
-        let person = Person(firstName: "", lastName: "", details: "")
+        let person = Person(firstName: "ewt", lastName: "tewt")
+        
         modelContext.insert(person)
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save: \(error)")
+        }
+
         path.append(person)
+        print ("number of records in path: \(path.count) ")
+        print ("number of records in array: \(people.count) ")
     }
 }
 
