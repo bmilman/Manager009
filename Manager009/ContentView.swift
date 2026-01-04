@@ -20,11 +20,29 @@ struct ContentView: View {
                 .fill(Color.blue)
                 .frame(width: 200) // fixed width
                 .frame(maxHeight: .infinity) // take available vertical space
-                .dropDestination(for: String.self, action: {
-                    items, location in
-                    
-                    return 
-                })
+            
+                .dropDestination(for: String.self) { items, location in
+                    struct PersonSummary: Codable {
+                        let firstName: String
+                        let lastName: String
+                        let details: String
+                    }
+
+                    let decoder = JSONDecoder()
+                    var decodedAny = false
+                    for item in items {
+                        if let data = item.data(using: .utf8),
+                           let summary = try? decoder.decode(PersonSummary.self, from: data) {
+                            print("Dropped person => first: \(summary.firstName), last: \(summary.lastName), details: \(summary.details)")
+                            decodedAny = true
+                        } else {
+                            print("Failed to decode dropped item as PersonSummary JSON: \(item)")
+                        }
+                    }
+                    return decodedAny
+                }
+            
+
             
         VStack{
             NavigationStack  ( path:$path){
@@ -55,11 +73,11 @@ struct ContentView: View {
             VStack{
                 ForEach(people){ person in
                     PersonTransferableView(person: person)
-                        .draggable(person.firstName)
+                        
                 }
             }
-            .background(Color.orange)
-            .padding(10)
+            //.background(Color.orange)
+            //.padding(10)
             
         }
     }
@@ -75,3 +93,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
