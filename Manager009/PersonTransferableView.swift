@@ -11,44 +11,32 @@ import Foundation
 struct PersonTransferableView: View {
     
     var person: Person
+
     private var transPerson: PersonTransferable {
-        PersonTransferable(
-            nickname: person.firstName + " " + person.lastName,
-            personID: person.personId,
-            location: .zero
-        )
+        person.transPerson
     }
 
-//    private struct PersonSummary: Codable {
-//        let firstName: String
-//        let lastName: String
-//        let personId: Int
-//    }
-
     private var draggableJSON: String {
-        let encoder = JSONEncoder()
-        guard let data = try? encoder.encode(transPerson),
-              let json = String(data: data, encoding: .utf8) else {
-            return ""
-        }
-        return json
+        (try? encodeToJSONString(transPerson)) ?? ""
     }
     
     
     var body: some View {
         
         VStack{
-            Text("Name:\(transPerson.nickname)")
+            Label(transPerson.nickname, systemImage: "person")
             Text("ID \(transPerson.personID)")
         }
         .border(Color.black)
         .draggable(draggableJSON)
-        //.draggable(person.lastName)
-        //.draggable(person.details)
     }
 }
 
 //#Preview {
 //    PersonTransferableView()
+//}
+
+//func makeJSONstring(from value: PersonTransferable) throws -> String {
+//    try encodeToJSONString(value)
 //}
 
