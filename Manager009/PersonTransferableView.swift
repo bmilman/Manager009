@@ -11,17 +11,24 @@ import Foundation
 struct PersonTransferableView: View {
     
     var person: Person
-    
-    private struct PersonSummary: Codable {
-        let firstName: String
-        let lastName: String
-        let personId: Int
+    private var transPerson: PersonTransferable {
+        PersonTransferable(
+            nickname: person.firstName + " " + person.lastName,
+            personID: person.personId,
+            location: .zero
+        )
     }
 
+//    private struct PersonSummary: Codable {
+//        let firstName: String
+//        let lastName: String
+//        let personId: Int
+//    }
+
     private var draggableJSON: String {
-        let summary = PersonSummary(firstName: person.firstName, lastName: person.lastName, personId: person.personId)
         let encoder = JSONEncoder()
-        guard let data = try? encoder.encode(summary), let json = String(data: data, encoding: .utf8) else {
+        guard let data = try? encoder.encode(transPerson),
+              let json = String(data: data, encoding: .utf8) else {
             return ""
         }
         return json
@@ -31,9 +38,8 @@ struct PersonTransferableView: View {
     var body: some View {
         
         VStack{
-            Text("first name \(person.firstName)")
-            Text("last name \(person.lastName)")
-            Text("person ID \(person.personId)")
+            Text("Name:\(transPerson.nickname)")
+            Text("ID \(transPerson.personID)")
         }
         .border(Color.black)
         .draggable(draggableJSON)

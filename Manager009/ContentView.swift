@@ -13,34 +13,45 @@ struct ContentView: View {
     @Query var people: [Person]
     @Environment(\.modelContext) var modelContext
     @State private var path = [Person] ()
+    @State private var personsArray: [PersonTransferable] = []
+    
     
     var body: some View {
         HStack{
-            Rectangle()
-                .fill(Color.blue)
-                .frame(width: 200) // fixed width
-                .frame(maxHeight: .infinity) // take available vertical space
-            
-                .dropDestination(for: String.self) { items, location in
-                    struct PersonSummary: Codable {
-                        let firstName: String
-                        let lastName: String
-                        let personId: Int
+            ZStack(alignment: .topLeading) {
+                Rectangle()
+                    .fill(Color.blue)
+                    .frame(width: 400)
+                    .frame(maxHeight: 200)
+                    .dropDestination(for: String.self) { items, location in
+                        let decoder = JSONDecoder()
+                        var decodedAny = false
+                        for item in items {
+                            if let data = item.data(using: .utf8),
+                               var personTransferable = try? decoder.decode(PersonTransferable.self, from: data) {
+                                // Update the drop location
+                                personTransferable.location = location
+                                // Append to our array
+                                personsArray.append(personTransferable)
+                                print("Dropped PersonTransferable => nickname: \(personTransferable.nickname), id: \(personTransferable.personID), location: \(location)")
+                                decodedAny = true
+                            } else {
+                                print("Failed to decode dropped item as PersonTransferable JSON: \(item)")
+                            }
+                        }
+                        return decodedAny
                     }
 
-                    let decoder = JSONDecoder()
-                    var decodedAny = false
-                    for item in items {
-                        if let data = item.data(using: .utf8),
-                           let summary = try? decoder.decode(PersonSummary.self, from: data) {
-                            print("Dropped person => first: \(summary.firstName), last: \(summary.lastName), details: \(summary.personId), location: \(location)")
-                            decodedAny = true
-                        } else {
-                            print("Failed to decode dropped item as PersonSummary JSON: \(item)")
-                        }
-                    }
-                    return decodedAny
+                // Overlay dropped persons
+                ForEach(Array(personsArray.enumerated()), id: \.offset) { index, item in
+                    Text(item.nickname)
+                        .font(.caption)
+                        .padding(4)
+                        .background(Color.white.opacity(0.8))
+                        .cornerRadius(4)
+                        .position(x: item.location.x, y: item.location.y)
                 }
+            }
             
 
             
