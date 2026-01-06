@@ -19,9 +19,14 @@ import SwiftData
         self.personId = Int(Date().timeIntervalSince1970 * 1000)
     }
     
-    var transPerson: PersonTransferable {
-        PersonTransferable(nickname: "\(firstName) \(lastName)", personID: personId)
+    var nickName: String {
+        "\(firstName) \(lastName)"
     }
+    
+    
+//    var transPerson: PersonTransferable {
+//        PersonTransferable(nickname: "\(firstName) \(lastName)", personID: personId)
+//    }
     
     
     

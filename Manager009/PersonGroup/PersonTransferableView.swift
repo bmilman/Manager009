@@ -12,8 +12,12 @@ struct PersonTransferableView: View {
     
     var person: Person
 
-    private var transPerson: PersonTransferable {
-        person.transPerson
+    private var transPerson: Encodable {
+        struct TransferPerson: Encodable {
+            let nickName: String
+            let personId: Int
+        }
+        return TransferPerson(nickName: person.nickName, personId: person.personId)
     }
 
     private var draggableJSON: String {
@@ -24,8 +28,8 @@ struct PersonTransferableView: View {
     var body: some View {
         
         VStack{
-            Label(transPerson.nickname, systemImage: "person")
-            Text("ID \(transPerson.personID)")
+            Label(person.nickName, systemImage: "person")
+           // Text("ID \(transPerson.personID)")
         }
         .border(Color.black)
         .draggable(draggableJSON)
