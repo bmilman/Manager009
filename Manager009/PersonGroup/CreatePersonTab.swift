@@ -27,8 +27,16 @@ import SwiftData
             print ("number of records in path: \(path.count) ")
         }
         
-        
-        var body: some View {
+        func deletePerson(at offsets: IndexSet) {
+          for index in offsets {
+                let person = people[index]
+                modelContext.delete(person)
+            }
+         }
+       
+      
+      
+      var body: some View {
             NavigationStack(path: $path) {
                 List {
                     ForEach(people) { person in
@@ -36,6 +44,7 @@ import SwiftData
                             Text(person.firstName + " " + person.lastName)
                         }
                     }
+                    .onDelete(perform: deletePerson)
                 }
                 .navigationDestination(for: Person.self) { person in
                     EditPersonView(person: person)

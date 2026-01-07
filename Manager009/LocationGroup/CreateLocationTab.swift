@@ -23,9 +23,13 @@ struct CreateLocationTab: View {
             print("Failed to save: \(error)")
         }
         path.append(loc)
-        print ("number of records in path: \(path.count) ")
-        
     }
+    func deleteLocation(at offsets: IndexSet) {
+      for index in offsets {
+            let loc = locations[index]
+            modelContext.delete(loc)
+        }
+     }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -35,6 +39,7 @@ struct CreateLocationTab: View {
                         Text(loc.locationName )
                     }
                 }
+                .onDelete(perform: deleteLocation)
             }
             .navigationDestination(for: Location.self) { loc in
                 EditLocationView(location:loc)

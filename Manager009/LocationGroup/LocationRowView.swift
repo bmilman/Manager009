@@ -15,6 +15,18 @@ struct LocationRowView: View {
 
     var location: Location
     
+    init(location: Location) {
+        self.location = location
+        let targetLocationID = location.locationID
+        _liason = Query(
+            filter: #Predicate<Liason_Location_Person> { item in
+                item.locationId == targetLocationID
+            },
+            sort: [SortDescriptor(\Liason_Location_Person.locationName, order: .reverse)]
+        )
+        print("liason.count: \(String(liason.count))")
+    }
+    
     let rowHeight: CGFloat = 100
     let fontScale: CGFloat = 0.4 // 50% of the row height is a reasonable starting point
     @State private var isTargeted = false
@@ -88,6 +100,7 @@ struct LocationRowView: View {
                                 jsonPerson = item
                                 transPerson = decodePersonTransfer(item)
                                 addLiason()
+                                print("dropped: \(transPerson?.nickName ?? "")")
                             }
                             return isTargeted
                         }, isTargeted: { targeted in
@@ -95,7 +108,10 @@ struct LocationRowView: View {
                         }
                                          
                         )
-                    Text(transPerson?.nickName ?? "")
+                    
+                    let nickname = liason.last?.personNickName ?? ""
+                    Text(nickname)
+                    //Text(transPerson?.nickName ?? "")
                     // .draggable()
                 }
                 
