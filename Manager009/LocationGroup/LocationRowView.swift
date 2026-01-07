@@ -6,24 +6,53 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct LocationRowView: View {
     
+    @Query private var liason: [Liason_Location_Person]
+    @Environment(\.modelContext) private var modelContext
+
     var location: Location
     
     let rowHeight: CGFloat = 100
     let fontScale: CGFloat = 0.4 // 50% of the row height is a reasonable starting point
     @State private var isTargeted = false
     @State private var transPerson: PersonTransfer?
+    @State private var jsonPerson: String?
     
     struct PersonTransfer: Decodable {
         var nickName: String
         var personId: Int
     }
-        
+    
+    func decodePersonTransfer(_ json: String) -> PersonTransfer? {
+        let data = json.data(using: .utf8)!
+        transPerson = try? JSONDecoder().decode(PersonTransfer.self, from: data)
+        return transPerson
+    }
+    
+    func addLiason() {
+        let liason = Liason_Location_Person(
+        id: UUID(),
+        locationName: location.locationName,
+        locationId: location.locationID,
+        personNickName: transPerson?.nickName ?? "",
+        personId: transPerson?.personId ?? 0,
+        createdAt:  Date()
+        )
+        modelContext.insert(liason)
+        do {
+            try modelContext.save()
+            print("successfully save: \(liason)")
+        } catch {
+            print("Failed to save: \(error)")
+        }
+    }
+    
     var body: some View {
         HStack {
-
+            
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(.blue)
@@ -43,49 +72,45 @@ struct LocationRowView: View {
                 Rectangle()
                     .fill(.red)
                     .frame(minWidth: rowHeight,  maxWidth: rowHeight * 5, minHeight: rowHeight, maxHeight: rowHeight)
-                    
-                    //.aspectRatio(1, contentMode: .fit)
+                
+                //.aspectRatio(1, contentMode: .fit)
                 
             }
-            //.allowsHitTesting(false)
-
-            GeometryReader { geometry in
-                
-                
+            
+            VStack{
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(isTargeted ? .green.opacity(0.2) : .green)
-                        .frame(width: rowHeight * 2, height: rowHeight)
+                        .frame(width: rowHeight * 1.5, height: rowHeight * 0.5)
                         .contentShape(Rectangle())
                         .dropDestination(for: String.self, action: { items, location in
-                            let decoder = JSONDecoder()
-                            var decodedAny = false
                             for item in items {
-                                if let data = item.data(using: .utf8),
-                                   let personTransferable = try? decoder.decode(PersonTransfer.self, from: data) {
-                                   transPerson = personTransferable
-                                    print("decode successful: \(transPerson?.nickName ?? "")")
-                                    //personTransferable.location = location
-                                    decodedAny = true
-                                } else {
-                                    print("Failed to decode dropped item as PersonTransferable JSON: \(item)")
-                                }
+                                jsonPerson = item
+                                transPerson = decodePersonTransfer(item)
+                                addLiason()
                             }
-                            print("dropped", items, location)
-                            return decodedAny
+                            return isTargeted
                         }, isTargeted: { targeted in
-                            isTargeted = targeted
-                        })
+                            self.isTargeted = targeted
+                        }
+                                         
+                        )
                     Text(transPerson?.nickName ?? "")
-                       // .draggable()
+                    // .draggable()
                 }
-                //.allowsHitTesting(true)
+                
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.yellow)
+                        .frame(width: rowHeight * 1.5, height: rowHeight * 0.5)
+                        .contentShape(Rectangle())
+                }
             }
         }
         .frame(height: rowHeight)
+        .padding(2)
     }
 }
-
 //#Preview {
 //    
 //    LocationRowView(location: Location(locationName: "OR 27"))
