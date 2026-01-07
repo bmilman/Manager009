@@ -12,7 +12,7 @@ import SwiftData
     var locationID: Int
     var locationName: String
     
-    init(locationID: Int, locationName: String) {
+    init(locationName: String) {
         self.locationID = Int.random(in: 1...1000)
         self.locationName = locationName
     }

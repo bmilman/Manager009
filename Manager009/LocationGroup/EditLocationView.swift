@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct EditLocationView: View {
+    
+    @Bindable var location: Location
+    
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Form {
+            Section(header: Text("Location")) {
+                TextField("Name", text: $location.locationName)
+            }
+        }
+        .navigationTitle(Text("Edit Location"))
     }
 }
 
-#Preview {
-    EditLocationView()
-}
+//#Preview {
+//    EditLocationView()
+//}

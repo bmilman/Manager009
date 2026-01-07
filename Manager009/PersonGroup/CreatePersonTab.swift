@@ -24,7 +24,7 @@ import SwiftData
                 print("Failed to save: \(error)")
             }
             path.append(person)
-           // print ("number of records in path: \(path.count) ")
+            print ("number of records in path: \(path.count) ")
         }
         
         
@@ -51,6 +51,6 @@ import SwiftData
 
               
             }
-            .background(Color.green)
+            //.background(Color.green)
         }
     }
