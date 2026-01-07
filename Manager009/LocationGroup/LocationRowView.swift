@@ -24,7 +24,6 @@ struct LocationRowView: View {
             },
             sort: [SortDescriptor(\Liason_Location_Person.locationName, order: .reverse)]
         )
-        print("liason.count: \(String(liason.count))")
     }
     
     let rowHeight: CGFloat = 100
@@ -109,10 +108,23 @@ struct LocationRowView: View {
                                          
                         )
                     
-                    let nickname = liason.last?.personNickName ?? ""
-                    Text(nickname)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(liason, id: \.self) { liason in
+                                Text(liason.personNickName)
+                                    .lineLimit(1)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(.white.opacity(0.2))
+                                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                                    .draggable(String(liason.personId))
+                            }
+                        }
+                        .padding(.horizontal, 4)
+                    }
+                    
                     //Text(transPerson?.nickName ?? "")
-                    // .draggable()
                 }
                 
                 ZStack {
