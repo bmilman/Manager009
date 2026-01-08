@@ -45,7 +45,6 @@ struct LocationRowView: View {
     
     func addLiason() {
         let liason = Liason_Location_Person(
-        id: UUID(),
         locationName: location.locationName,
         locationId: location.locationID,
         personNickName: transPerson?.nickName ?? "",
@@ -101,7 +100,7 @@ struct LocationRowView: View {
                                 addLiason()
                                 print("dropped: \(transPerson?.nickName ?? "")")
                             }
-                            return isTargeted
+                            return  isTargeted
                         }, isTargeted: { targeted in
                             self.isTargeted = targeted
                         }
@@ -118,8 +117,8 @@ struct LocationRowView: View {
                                     .padding(.vertical, 2)
                                     .background(.white.opacity(0.2))
                                     .clipShape(RoundedRectangle(cornerRadius: 4))
-                                    .draggable(String(liason.personId))
-                            }
+                                    .draggable(String(liason.id))
+                                                             }
                         }
                         .padding(.horizontal, 4)
                     }

@@ -9,15 +9,14 @@ import Foundation
 import SwiftData
 
 @Model class Liason_Location_Person: Identifiable {
-    var id: UUID
+    var id: Int = Int.random(in: 1...1000000000)
     var locationName: String
     var locationId: Int
     var personNickName: String
     var personId: Int
     var createdAt: Date
     
-    init(id: UUID, locationName: String, locationId: Int, personNickName: String, personId: Int, createdAt: Date) {
-        self.id = id
+    init(locationName: String, locationId: Int, personNickName: String, personId: Int, createdAt: Date) {
         self.locationName = locationName
         self.locationId = locationId
         self.personNickName = personNickName

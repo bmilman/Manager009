@@ -22,7 +22,9 @@ struct ContentView: View {
             
             CreateLocationTab()
                 .tabItem { Label("Locations", systemImage: "l.joystick.tilt.left.fill")}
-        }
+            
+            CaseViewCreation()
+            .tabItem { Label("Cases", systemImage: "person.1.fill") }        }
     }
     
     

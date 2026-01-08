@@ -54,7 +54,8 @@ struct CreateLocationTab: View {
             }
 
           
-        }    }
+        }
+    }
 }
 
 #Preview {
