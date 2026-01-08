@@ -30,6 +30,7 @@ struct LocationRowView: View {
     let fontScale: CGFloat = 0.4 // 50% of the row height is a reasonable starting point
     @State private var isTargeted = false
     @State private var transPerson: PersonTransfer?
+    @State private var transCase: CaseTrans?
     @State private var jsonPerson: String?
     
     struct PersonTransfer: Decodable {
@@ -82,7 +83,13 @@ struct LocationRowView: View {
                 Rectangle()
                     .fill(.red)
                     .frame(minWidth: rowHeight,  maxWidth: rowHeight * 5, minHeight: rowHeight, maxHeight: rowHeight)
-                
+                    .dropDestination(for: CaseTrans.self, action: { items, location in
+                        for item in items {
+                            transCase = item
+                            print("dropped: \(item)")
+                        }
+                        return true
+                    })
                 //.aspectRatio(1, contentMode: .fit)
                 
             }

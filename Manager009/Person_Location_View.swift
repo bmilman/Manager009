@@ -12,6 +12,7 @@ struct Person_Location_Tab: View {
     
     @Query var people: [Person]
     @Query var locations: [Location]
+    @Query var cases: [CaseModel]
     //@State private var personsArray: [PersonTransferable] = []
     
     var body: some View {
@@ -23,14 +24,18 @@ struct Person_Location_Tab: View {
                 }
             }
             //.allowsHitTesting(true)
-            
-            List {
-                 ForEach(people) { person in
-                     PersonTransferableView(person: person)
-                 }
-             }
-            
-            
+            VStack{
+                List {
+                    ForEach(people) { person in
+                        PersonTransferableView(person: person)
+                    }
+                }
+                List {
+                    ForEach(cases) { caseModel in
+                        CaseView(caseTotal:caseModel)
+                    }
+                }
+            }
         }
     }
 }
