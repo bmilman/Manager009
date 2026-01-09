@@ -37,19 +37,13 @@ struct LocationRowView: View {
     let rowHeight: CGFloat = 100
     let fontScale: CGFloat = 0.4 // 50% of the row height is a reasonable starting point
     @State private var isTargeted = false
-    @State private var transPerson: PersonTransfer?
+    @State private var isCaseTargeted = false
+    @State private var transPerson: PersonTrans?
     @State private var transCase: CaseTrans?
-    @State private var jsonPerson: String?
     
     struct PersonTransfer: Decodable {
         var nickName: String
         var personId: Int
-    }
-    
-    func decodePersonTransfer(_ json: String) -> PersonTransfer? {
-        let data = json.data(using: .utf8)!
-        transPerson = try? JSONDecoder().decode(PersonTransfer.self, from: data)
-        return transPerson
     }
     
     func addLiasonPerson() {
@@ -108,8 +102,7 @@ struct LocationRowView: View {
           
     //MARK: - CASES
             ZStack {
-                Rectangle()
-                    .fill(.red)
+               
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -125,17 +118,23 @@ struct LocationRowView: View {
                     }
                     .padding(.horizontal, 4)
                 }
+                
+                Rectangle()
+                    .fill(.red)
+                    .opacity(0.5)
             }
             .frame(maxWidth: .infinity, maxHeight: rowHeight)
             .contentShape(Rectangle())
             .dropDestination(for: CaseTrans.self, action: { items, location in
+                var handled = false
                 for item in items {
                     transCase = item
                     addLiasonCase()
-                    print("dropped: \(item)")
+                    handled = true
+                    print("dropped case: \(item)")
                 }
-                return true
-            })
+                return handled
+            }, isTargeted: { _ in })
        //MARK: - END CASES
            
             VStack{
@@ -144,14 +143,15 @@ struct LocationRowView: View {
                         .fill(isTargeted ? .green.opacity(0.2) : .green)
                         .frame(width: rowHeight * 1.2, height: rowHeight * 0.5)
                         .contentShape(Rectangle())
-                        .dropDestination(for: String.self, action: { items, location in
+                        .dropDestination(for: PersonTrans.self, action: { items, location in
+                            var handled = false
                             for item in items {
-                                jsonPerson = item
-                                transPerson = decodePersonTransfer(item)
+                                transPerson = item
                                 addLiasonPerson()
-                                print("dropped: \(transPerson?.nickName ?? "")")
+                                handled = true
+                                print("dropped person: \(item)")
                             }
-                            return  isTargeted
+                            return handled
                         }, isTargeted: { targeted in
                             self.isTargeted = targeted
                         }

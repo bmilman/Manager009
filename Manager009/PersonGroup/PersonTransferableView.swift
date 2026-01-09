@@ -7,32 +7,31 @@
 
 import SwiftUI
 import Foundation
+import UniformTypeIdentifiers
+
+
+struct PersonTrans: Codable, Transferable  {
+    static let personContentType = UTType(exportedAs: "com.manager009.personTrans")
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: personContentType)
+    }
+    var nickName: String
+    var personId: Int
+}
+
+
 
 struct PersonTransferableView: View {
     
     var person: Person
-
-    private var transPerson: Encodable {
-        struct TransferPerson: Encodable {
-            let nickName: String
-            let personId: Int
-        }
-        return TransferPerson(nickName: person.nickName, personId: person.personId)
-    }
-
-    private var draggableJSON: String {
-        (try? encodeToJSONString(transPerson)) ?? ""
-    }
-    
     
     var body: some View {
         
-        VStack{
-            Label(person.nickName, systemImage: "person")
-           // Text("ID \(transPerson.personID)")
-        }
-        .border(Color.black)
-        .draggable(draggableJSON)
+        let transPerson = PersonTrans(nickName: person.nickName, personId: person.personId)
+        
+        Text("\(person.nickName)")
+            .font(Font.largeTitle)
+            .draggable(transPerson)
     }
 }
 

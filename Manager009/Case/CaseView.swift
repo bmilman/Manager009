@@ -11,8 +11,10 @@ import UniformTypeIdentifiers
 
 
 struct CaseTrans: Codable, Transferable  {
-        static var transferRepresentation: some TransferRepresentation {
-            CodableRepresentation(contentType: .data)
+    static let caseContentType = UTType(exportedAs: "com.manager009.casetrans")
+
+    static var transferRepresentation: some TransferRepresentation {
+            CodableRepresentation(contentType: caseContentType)
         }
         
         var caseId: Int
