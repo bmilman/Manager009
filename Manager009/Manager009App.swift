@@ -13,7 +13,7 @@ struct Manager009App: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: [Person.self, Location.self, Liason_Location_Person.self, CaseModel.self])
+                .modelContainer(for: [Person.self, Location.self, Liason_Location_Person.self, CaseModel.self, Liason_Location_Case.self])
         }
     }
 }

@@ -17,6 +17,8 @@ struct CaseTrans: Codable, Transferable  {
         
         var caseId: Int
         var procNickname: String
+        var procedureStart: Date
+        var procedureEnd: Date
     }
 
 struct CaseView: View {
@@ -25,7 +27,7 @@ struct CaseView: View {
     
     var body: some View {
        
-        let transCase: CaseTrans = CaseTrans(caseId: caseTotal.id, procNickname: caseTotal.procedureNickName)
+        let transCase: CaseTrans = CaseTrans(caseId: caseTotal.id, procNickname: caseTotal.procedureNickName, procedureStart: caseTotal.proceduerStart ?? .now, procedureEnd: caseTotal.proceduerEnd ?? .distantFuture)
             
         Text("\(transCase.caseId) - \(transCase.procNickname)")
             .font(Font.largeTitle)

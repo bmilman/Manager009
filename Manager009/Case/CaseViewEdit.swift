@@ -24,11 +24,11 @@ struct CaseViewEdit: View {
                 DatePicker("Start Date", selection: Binding(
                     get: { selectedCase.proceduerStart ?? Date() },
                     set: { selectedCase.proceduerStart = $0 }
-                ), displayedComponents: .date)
+                ), displayedComponents: [.date, .hourAndMinute])
                 DatePicker("End Date", selection: Binding(
                     get: { selectedCase.proceduerEnd ?? Date() },
                     set: { selectedCase.proceduerEnd = $0 }
-                ), displayedComponents: .date)            
+                ), displayedComponents: [.date, .hourAndMinute])
             }
         }
         .navigationTitle(Text("Edit Case"))

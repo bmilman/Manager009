@@ -10,7 +10,8 @@ import SwiftData
 
 struct LocationRowView: View {
     
-    @Query private var liason: [Liason_Location_Person]
+    @Query private var liasonPerson: [Liason_Location_Person]
+    @Query private var liasonCase: [Liason_Location_Case]
     @Environment(\.modelContext) private var modelContext
 
     var location: Location
@@ -18,12 +19,19 @@ struct LocationRowView: View {
     init(location: Location) {
         self.location = location
         let targetLocationID = location.locationID
-        _liason = Query(
+        _liasonPerson = Query(
             filter: #Predicate<Liason_Location_Person> { item in
                 item.locationId == targetLocationID
             },
             sort: [SortDescriptor(\Liason_Location_Person.locationName, order: .reverse)]
         )
+        _liasonCase = Query(
+            filter: #Predicate<Liason_Location_Case> { item in
+                item.locationId == targetLocationID
+            },
+            sort: [SortDescriptor(\Liason_Location_Case.procedureStart, order: .forward)]
+        )
+        
     }
     
     let rowHeight: CGFloat = 100
@@ -44,7 +52,7 @@ struct LocationRowView: View {
         return transPerson
     }
     
-    func addLiason() {
+    func addLiasonPerson() {
         let liason = Liason_Location_Person(
         locationName: location.locationName,
         locationId: location.locationID,
@@ -55,12 +63,30 @@ struct LocationRowView: View {
         modelContext.insert(liason)
         do {
             try modelContext.save()
-            print("successfully save: \(liason)")
+            print("successfully save person: \(liason)")
         } catch {
             print("Failed to save: \(error)")
         }
     }
     
+    func addLiasonCase() {
+        let liason = Liason_Location_Case(
+            locationId: location.locationID,
+            locationName: location.locationName,
+            caseId: transCase?.caseId ?? 0,
+            procNickname: transCase?.procNickname ?? "",
+            procedureStart: transCase?.procedureStart ?? Date(),
+            procedureEnd: transCase? .procedureEnd ?? Date()
+        )
+        
+        modelContext.insert(liason)
+        do {
+            try modelContext.save()
+            print("successfully save case: \(liason)")
+        } catch {
+            print("Failed to save: \(error)")
+        }
+    }
     var body: some View {
         HStack {
             
@@ -79,32 +105,50 @@ struct LocationRowView: View {
                     .frame(height: rowHeight * fontScale)       // vertically center within rectangle
                 
             }
+          
+    //MARK: - CASES
             ZStack {
                 Rectangle()
                     .fill(.red)
-                    .frame(minWidth: rowHeight,  maxWidth: rowHeight * 5, minHeight: rowHeight, maxHeight: rowHeight)
-                    .dropDestination(for: CaseTrans.self, action: { items, location in
-                        for item in items {
-                            transCase = item
-                            print("dropped: \(item)")
-                        }
-                        return true
-                    })
-                //.aspectRatio(1, contentMode: .fit)
                 
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(liasonCase, id: \.self) { liason in
+                            Text(liason.procNickname)
+                                .lineLimit(1)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(.white.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                .draggable(String(liason.id))
+                                                         }
+                    }
+                    .padding(.horizontal, 4)
+                }
             }
-            
+            .frame(maxWidth: .infinity, maxHeight: rowHeight)
+            .contentShape(Rectangle())
+            .dropDestination(for: CaseTrans.self, action: { items, location in
+                for item in items {
+                    transCase = item
+                    addLiasonCase()
+                    print("dropped: \(item)")
+                }
+                return true
+            })
+       //MARK: - END CASES
+           
             VStack{
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(isTargeted ? .green.opacity(0.2) : .green)
-                        .frame(width: rowHeight * 1.5, height: rowHeight * 0.5)
+                        .frame(width: rowHeight * 1.2, height: rowHeight * 0.5)
                         .contentShape(Rectangle())
                         .dropDestination(for: String.self, action: { items, location in
                             for item in items {
                                 jsonPerson = item
                                 transPerson = decodePersonTransfer(item)
-                                addLiason()
+                                addLiasonPerson()
                                 print("dropped: \(transPerson?.nickName ?? "")")
                             }
                             return  isTargeted
@@ -115,9 +159,9 @@ struct LocationRowView: View {
                         )
                     
                     
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(liason, id: \.self) { liason in
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(spacing: 8) {
+                            ForEach(liasonPerson, id: \.self) { liason in
                                 Text(liason.personNickName)
                                     .lineLimit(1)
                                     .padding(.horizontal, 6)
@@ -136,7 +180,7 @@ struct LocationRowView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(.yellow)
-                        .frame(width: rowHeight * 1.5, height: rowHeight * 0.5)
+                        .frame(width: rowHeight * 1.2, height: rowHeight * 0.5)
                         .contentShape(Rectangle())
                 }
             }
