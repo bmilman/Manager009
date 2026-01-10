@@ -14,6 +14,9 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
+            
+            
+            
             Person_Location_Tab()
                 .tabItem { Label("Person-Location", systemImage: "square.on.square") }
             
@@ -24,7 +27,10 @@ struct ContentView: View {
                 .tabItem { Label("Locations", systemImage: "l.joystick.tilt.left.fill")}
             
             CaseViewCreation()
-            .tabItem { Label("Cases", systemImage: "person.1.fill") }        }
+                .tabItem { Label("Cases", systemImage: "person.1.fill") }
+            
+            
+        }
     }
     
     

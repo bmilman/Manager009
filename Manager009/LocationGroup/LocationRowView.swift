@@ -103,21 +103,22 @@ struct LocationRowView: View {
     //MARK: - CASES
             ZStack {
                
+                TimelineWithCases(arrayCases: liasonCase, start: Date(timeIntervalSinceNow: -86400), end: .now)
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(liasonCase, id: \.self) { liason in
-                            Text(liason.procNickname)
-                                .lineLimit(1)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(.white.opacity(0.2))
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
-                                .draggable(String(liason.id))
-                                                         }
-                    }
-                    .padding(.horizontal, 4)
-                }
+//                ScrollView(.horizontal, showsIndicators: false) {
+//                    HStack(spacing: 8) {
+//                        ForEach(liasonCase, id: \.self) { liason in
+//                            Text(liason.procNickname)
+//                                .lineLimit(1)
+//                                .padding(.horizontal, 6)
+//                                .padding(.vertical, 2)
+//                                .background(.white.opacity(0.2))
+//                                .clipShape(RoundedRectangle(cornerRadius: 4))
+//                                .draggable(String(liason.id))
+//                                                         }
+//                    }
+//                    .padding(.horizontal, 4)
+//                }
                 
                 Rectangle()
                     .fill(.red)
