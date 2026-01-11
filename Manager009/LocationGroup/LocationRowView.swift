@@ -15,8 +15,12 @@ struct LocationRowView: View {
     @Environment(\.modelContext) private var modelContext
 
     var location: Location
+    var startTime: Date
+    var endTime: Date
+    @Binding var scrollPosition: ScrollPosition
+    //@State private var scrollPosition: ScrollPosition = .init(x: 50)
     
-    init(location: Location) {
+    init(location: Location, startTime: Date, endTime: Date, scrollPosition: Binding<ScrollPosition>) {
         self.location = location
         let targetLocationID = location.locationID
         _liasonPerson = Query(
@@ -31,7 +35,9 @@ struct LocationRowView: View {
             },
             sort: [SortDescriptor(\Liason_Location_Case.procedureStart, order: .forward)]
         )
-        
+        self.startTime = startTime
+        self.endTime = endTime
+        self._scrollPosition  = scrollPosition
     }
     
     let rowHeight: CGFloat = 100
@@ -103,7 +109,7 @@ struct LocationRowView: View {
     //MARK: - CASES
             ZStack {
                
-                TimelineWithCases(arrayCases: liasonCase, start: Date(timeIntervalSinceNow: -86400), end: .now)
+                TimelineWithCases(arrayCases: liasonCase, start: startTime, end: endTime, scrollPosition: $scrollPosition)
                 
 //                ScrollView(.horizontal, showsIndicators: false) {
 //                    HStack(spacing: 8) {

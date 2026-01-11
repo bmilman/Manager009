@@ -1,75 +1,55 @@
 //
-//  TimelineView.swift
+//  TimeLinePlainView.swift
 //  Manager009
 //
-//  Created by bernard milman on 1/9/26.
+//  Created by bernard milman on 1/10/26.
 //
 
 import SwiftUI
 
+struct TimeLinePlainView: View {
+    
+    // Configure your time window
+    let start: Date
+    let end: Date
+   // @Binding var scrollPosition: ScrollPosition
 
-struct TimelineWithCases: View {
-    
-    var arrayCases: [Liason_Location_Case]
-    
-    var start: Date
-    var end: Date
-    @Binding var scrollPosition: ScrollPosition
-    
+
+    // Visual scale: points per minute (zoom level)
+    @State private var pointsPerMinute: CGFloat = 4
     
     // Tick configuration
     private let majorTickInterval: TimeInterval = 60 * 60   // 1 hour
     private let minorTickInterval: TimeInterval = 15 * 60   // 15 minutes
     
-    @State private var pointsPerMinute: CGFloat = 2
-    
     var body: some View {
-        ScrollView(.horizontal) {
-            ZStack(alignment: .topLeading) {
-                TimelineContent(
-                    start: start,
-                    end: end,
-                    pointsPerMinute: pointsPerMinute,
-                    majorTickInterval: 60*60,
-                    minorTickInterval: 15*60
-                )
-                ForEach(Array(arrayCases.enumerated()), id: \.offset) { index, cas in
-                    let x = xPosition(for: cas.procedureStart)
-                    let width = max(1, xPosition(for: cas.procedureEnd) - x)
-                    RoundedRectangle(cornerRadius: 4)
-                        //.fill(cas.color.opacity(0.7))
-                        .frame(width: width, height: 22)
-                        .overlay {
-                            Text(cas.procNickname)
-                                .font(.caption2)
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 4)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.6)
-                        }
-                        .position(x: x + width/2, y: 70 + CGFloat(index % 4) * 28) // simple row stacking
+        ScrollView(.horizontal, showsIndicators: true) {
+            TimelineContent(
+                start: start,
+                end: end,
+                pointsPerMinute: pointsPerMinute,
+                majorTickInterval: majorTickInterval,
+                minorTickInterval: minorTickInterval
+            )
+            .padding(.vertical, 12)
+            .background(Color(.systemGroupedBackground))
+        }
+        //.scrollPosition($scrollPosition)
+        .overlay(alignment: .topTrailing) {
+            // Simple zoom controls
+            HStack(spacing: 8) {
+                Button("-", systemImage: "minus.magnifyingglass") {
+                    pointsPerMinute = max(2, pointsPerMinute * 0.8)
+                }
+                Button("+", systemImage: "plus.magnifyingglass") {
+                    pointsPerMinute = min(60, pointsPerMinute * 1.25)
                 }
             }
-            .padding(.vertical, 24)
-            .frame(width: totalWidth(pointsPerMinute: pointsPerMinute), alignment: .topLeading)
+            .buttonStyle(.borderedProminent)
+            .padding()
         }
-        .scrollPosition($scrollPosition)
-    }
-    
-    private func xPosition(for date: Date) -> CGFloat {
-        let minutes = CGFloat(date.timeIntervalSince(start) / 60.0)
-        return minutes * pointsPerMinute
-    }
-    
-    private func totalWidth(pointsPerMinute: CGFloat) -> CGFloat {
-        let totalMinutes = CGFloat(end.timeIntervalSince(start) / 60.0)
-        return totalMinutes * pointsPerMinute
     }
 }
-
-
-
-
 
 private struct TimelineContent: View {
     let start: Date
@@ -90,9 +70,10 @@ private struct TimelineContent: View {
         ZStack(alignment: .topLeading) {
             // Baseline
             Rectangle()
+                //.fill(Color(.red))
                 .fill(Color.secondary.opacity(0.4))
-                .frame(height: 1)
-                .offset(y: 20)
+                //.frame(height: 200)
+                .offset(y: 40)
             
             // Minor ticks
             TicksView(
@@ -110,7 +91,7 @@ private struct TimelineContent: View {
                 start: start,
                 end: end,
                 interval: majorTickInterval,
-                height: 18,
+                height: 999,
                 color: .primary,
                 pointsPerMinute: pointsPerMinute
             )
@@ -124,7 +105,7 @@ private struct TimelineContent: View {
                 .offset(y: -8)
             }
         }
-        .frame(width: contentWidth, height: 44, alignment: .topLeading)
+        .frame(width: contentWidth, alignment: .topLeading)
         .contentShape(Rectangle())
     }
 }
@@ -197,33 +178,10 @@ private struct LabelsView: View {
         let minutes = CGFloat(date.timeIntervalSince(start) / 60.0)
         return minutes * pointsPerMinute
     }
+    
 }
 
-
-
-//MARK: - second half
-
-
-
-
 //#Preview {
-//    TimelineScrollView(
-//        start: Calendar.current.date(byAdding: .hour, value: -2, to: .now)!,
-//        end: Calendar.current.date(byAdding: .hour, value: 22, to: .now)!
-//    )
+//    TimeLinePlainView(start: Date(timeIntervalSinceNow: -86400), end: .now)
 //}
-
-//            // Simple zoom controls, for the future
-//            HStack(spacing: 8) {
-//                Button("-", systemImage: "minus.magnifyingglass") {
-//                    pointsPerMinute = max(2, pointsPerMinute * 0.8)
-//                }
-//                Button("+", systemImage: "plus.magnifyingglass") {
-//                    pointsPerMinute = min(60, pointsPerMinute * 1.25)
-//                }
-//            }
-//            .buttonStyle(.borderedProminent)
-//            .padding()
-
-
 
